@@ -2522,6 +2522,69 @@ func insertionSort2(n int32, arr []int32) {
 
 }
 
+func fairRations(B []int32) int32 {
+
+	length := int32(len(B))
+
+	var counts int32
+
+	for i := int32(0); i < length-1; i++ {
+		if B[i]%2 == 0 {
+			continue
+		}
+
+		counts += 2
+		B[i]++
+		B[i+1]++
+	}
+
+	if B[length-1]%2 != 0 {
+		return -1
+	}
+
+	return counts
+
+}
+
+func gridSearch(G []string, P []string) string {
+
+	rowsG, rowsP := int32(len(G)), int32(len(P))
+	colsG, colsP := int32(len(G[0])), int32(len(P[0]))
+
+	leftTop := P[0][0]
+
+	checkPattern := func(G []string, P []string) func(row, col int32) bool {
+		rowP, colP := int32(len(P)), int32(len(P[0]))
+
+		return func(row, col int32) bool {
+
+			for i := int32(0); i < rowP; i++ {
+				for j := int32(0); j < colP; j++ {
+					if P[i][j] != G[i+row][j+col] {
+						return false
+					}
+				}
+			}
+
+			return true
+		}
+	}(G, P)
+
+	for i := int32(0); i <= rowsG-rowsP; i++ {
+		for j := int32(0); j <= colsG-colsP; j++ {
+			if G[i][j] == leftTop {
+				res := checkPattern(i, j)
+
+				if res {
+					return "YES"
+				}
+			}
+		}
+	}
+
+	return "NO"
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2541,10 +2604,30 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr []int32
+	var arr []string
+	var arr2 []string
 	//arr = append(arr, 3, 1, 2)
 	//arr = append(arr, 4, 2)
-	arr = append(arr, 4, 3, 2, 1)
+	//arr = append(arr, 2, 3, 4, 5, 6)
+	//arr2 = append(arr,2 2, 3, 4, 5, 6)
+	arr = append(arr,
+		"1641",
+		"7942",
+		"6517",
+		"8907",
+		"1376",
+		"2691",
+		"2599",
+	)
+	arr2 = append(arr2,
+		"1641",
+		"7942",
+		"6517",
+		"8907",
+		"1376",
+		"2691",
+		"2599",
+	)
 	//arr1 = append(arr1,
 	//    //[]int32{1, 3, 1},
 	//    //[]int32{2, 1, 2},
@@ -2558,8 +2641,8 @@ func main() {
 	//)
 
 	//insertionSort(arr)
-	//result := workbook(5, 3, arr)
-	//fmt.Println(result)
+	result := gridSearch(arr, arr2)
+	fmt.Println(result)
 
 }
 
