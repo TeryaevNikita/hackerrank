@@ -2585,6 +2585,56 @@ func gridSearch(G []string, P []string) string {
 	return "NO"
 }
 
+func bigSorting(unsorted []string) []string {
+
+	var valueI, valueJ string
+	var lengthI, lengthJ int
+
+	sort.Slice(unsorted, func(i, j int) bool {
+
+		valueI, valueJ = unsorted[i], unsorted[j]
+
+		lengthI = len(valueI)
+		lengthJ = len(valueJ)
+
+		if lengthI != lengthJ {
+			return lengthI < lengthJ
+		}
+
+		for l := 0; l < lengthI; l++ {
+			if valueI[l] != valueJ[l] {
+				return valueI[l] < valueJ[l]
+			}
+		}
+
+		return false
+	})
+
+	return unsorted
+}
+
+func introTutorial(V int32, arr []int32) int32 {
+	findPos := func(arr []int32, left, right, value int32) int32 {
+
+		for {
+			pos := (right + left) / 2
+
+			if value == arr[pos] {
+				return pos
+			}
+
+			if value < arr[pos] {
+				right = pos - 1
+			} else {
+				left = pos + 1
+			}
+		}
+
+	}
+
+	return findPos(arr, 0, int32(len(arr))-1, V)
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2604,30 +2654,21 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr []string
-	var arr2 []string
-	//arr = append(arr, 3, 1, 2)
-	//arr = append(arr, 4, 2)
-	//arr = append(arr, 2, 3, 4, 5, 6)
-	//arr2 = append(arr,2 2, 3, 4, 5, 6)
-	arr = append(arr,
-		"1641",
-		"7942",
-		"6517",
-		"8907",
-		"1376",
-		"2691",
-		"2599",
-	)
-	arr2 = append(arr2,
-		"1641",
-		"7942",
-		"6517",
-		"8907",
-		"1376",
-		"2691",
-		"2599",
-	)
+	var arr []int32
+	arr = append(arr, 5, 7)
+	//arr = append(arr, 10, 6, 15, 20, 30, 5, 7)
+	//arr = append(arr, 1, 4, 5, 7)
+	//arr = append(arr, 1, 4, 5)
+	//arr = append(arr, 1, 4)
+	//arr = append(arr,
+	//	"1",
+	//	"22",
+	//	"333",
+	//	"4444",
+	//	"55555",
+	//	"666666",
+	//)
+
 	//arr1 = append(arr1,
 	//    //[]int32{1, 3, 1},
 	//    //[]int32{2, 1, 2},
@@ -2641,8 +2682,8 @@ func main() {
 	//)
 
 	//insertionSort(arr)
-	result := gridSearch(arr, arr2)
-	fmt.Println(result)
+	//result := smallerRight(arr)
+	//fmt.Println(result)
 
 }
 
