@@ -568,94 +568,29 @@ func arrayLeftRotation(n int32, arr []int32) []int32 {
 	return result
 }
 
-// NOT SOLVED
 func arrayManipulation(n int32, queries [][]int32) int64 {
 
-	var max int64
+	var max, current int64
 
-	var arr = make(map[int64][2]int64)
-
-	arr[1] = [2]int64{int64(n), 0}
-
-	fmt.Println(arr)
+	var arr = make([]int64, n)
 
 	for _, query := range queries {
 		a, b, k := int64(query[0]), int64(query[1]), int64(query[2])
-		fmt.Println(a, b, k)
 
-		for i, res := range arr {
-			left, right, value := i, res[0], res[1]
-			//fmt.Println("---")
-			fmt.Println(left, right, value)
-
-			if b < left {
-				continue
-			}
-
-			if a > right {
-				break
-			}
-
-			fmt.Println("need some do")
-
-			// I
-			if a == left && b < right {
-				arr[a] = [2]int64{b, value + k}
-				arr[b+1] = [2]int64{right, value}
-
-				if value+k > max {
-					max = value + k
-				}
-				continue
-			}
-
-			// II
-			if a > left && b > right {
-				newValue := value + k
-				arr[left] = [2]int64{a - 1, value}
-				arr[a] = [2]int64{right, newValue}
-				arr[right+1] = [2]int64{b, value}
-				continue
-			}
-
-			//III
-			if a < left && b > left && b < right {
-
-			}
-
-			if a > left && b < right {
-				newValue := value + k
-				arr[left] = [2]int64{a, value}
-				arr[a] = [2]int64{b, newValue}
-				arr[b+1] = [2]int64{right, value}
-				continue
-			}
-			//
-			//if a > left && b > right {
-			//    arr[a] = [2]int64{b, value + k}
-			//    arr[b+1] = [2]int64{right, value}
-			//
-			//    if value+k > max {
-			//        max = value + k
-			//    }
-			//
-			//}
-
+		arr[a-1] += k
+		if b < int64(n) {
+			arr[b] -= k
 		}
-		fmt.Println(arr)
-
-		//
-		//    for i := a; i <= b; i++ {
-		//        cur := arr[i-1]
-		//        cur += k
-		//        arr[i-1] = cur
-		//        if cur > max {
-		//            max = cur
-		//        }
-		//    }
 	}
 
-	//fmt.Println(arr)
+	fmt.Println(arr)
+	for _, value := range arr {
+		current += value
+
+		if current > max {
+			max = current
+		}
+	}
 
 	return max
 }
@@ -2654,8 +2589,13 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr []int32
-	arr = append(arr, 5, 7)
+	var arr [][]int32
+	arr = append(arr,
+		[]int32{2, 6, 8},
+		[]int32{3, 5, 7},
+		[]int32{1, 8, 1},
+		[]int32{5, 9, 15},
+	)
 	//arr = append(arr, 10, 6, 15, 20, 30, 5, 7)
 	//arr = append(arr, 1, 4, 5, 7)
 	//arr = append(arr, 1, 4, 5)
@@ -2682,8 +2622,8 @@ func main() {
 	//)
 
 	//insertionSort(arr)
-	//result := smallerRight(arr)
-	//fmt.Println(result)
+	result := arrayManipulation(10, arr)
+	fmt.Println(result)
 
 }
 
