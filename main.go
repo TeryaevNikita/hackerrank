@@ -2570,6 +2570,39 @@ func introTutorial(V int32, arr []int32) int32 {
 	return findPos(arr, 0, int32(len(arr))-1, V)
 }
 
+func flatlandSpaceStations(n int32, c []int32) int32 {
+
+	m := len(c)
+	var max, dif, first, last, res int32
+
+	sort.Slice(c, func(i, j int) bool {
+		return c[int32(i)] < c[int32(j)]
+	})
+
+	first = c[0]
+	last = c[m-1]
+
+	for i := 0; i < m-1; i++ {
+		dif = c[i+1] - c[i] - 1
+
+		if dif > max {
+			max = dif
+		}
+	}
+
+	res = (max + 1) / 2
+
+	if first > res {
+		res = first
+	}
+
+	if n-last-1 > res {
+		res = n - last - 1
+	}
+
+	return res
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2589,40 +2622,11 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr [][]int32
-	arr = append(arr,
-		[]int32{2, 6, 8},
-		[]int32{3, 5, 7},
-		[]int32{1, 8, 1},
-		[]int32{5, 9, 15},
-	)
-	//arr = append(arr, 10, 6, 15, 20, 30, 5, 7)
-	//arr = append(arr, 1, 4, 5, 7)
-	//arr = append(arr, 1, 4, 5)
-	//arr = append(arr, 1, 4)
-	//arr = append(arr,
-	//	"1",
-	//	"22",
-	//	"333",
-	//	"4444",
-	//	"55555",
-	//	"666666",
-	//)
-
-	//arr1 = append(arr1,
-	//    //[]int32{1, 3, 1},
-	//    //[]int32{2, 1, 2},
-	//    //[]int32{3, 3, 3},
-	//    []int32{0, 2, 1},
-	//    []int32{1, 1, 1},
-	//    []int32{2, 0, 0},
-	//    //[]int32{9, 10, 11, 12, 1212},
-	//    //[]int32{13, 14, 15, 16, 1616},
-	//    //[]int32{10, 9, 8, 7},
-	//)
+	var arr []int32
+	arr = append(arr, 0, 1, 2, 4, 3, 5)
 
 	//insertionSort(arr)
-	result := arrayManipulation(10, arr)
+	result := flatlandSpaceStations(6, arr)
 	fmt.Println(result)
 
 }
