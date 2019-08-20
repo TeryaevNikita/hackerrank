@@ -2603,6 +2603,234 @@ func flatlandSpaceStations(n int32, c []int32) int32 {
 	return res
 }
 
+func absolutePermutation(n int32, k int32) []int32 {
+
+	var result []int32
+
+	if k != 0 && n%(k*2) != 0 {
+		result = append(result, -1)
+		return result
+	}
+
+	add := true
+	var diff int32
+
+	for i := int32(1); i <= n; i++ {
+
+		if add {
+			diff = k
+		} else {
+			diff = -k
+		}
+
+		result = append(result, i+diff)
+
+		if k != 0 && i%k == 0 {
+			add = !add
+		}
+
+	}
+	return result
+}
+
+func surfaceArea(A [][]int32) int32 {
+	w := len(A)
+
+	h := len(A[0])
+
+	sum := int32(w) * int32(h) * 2
+
+	var dif int32
+	for i := 0; i < w; i++ {
+		for j := 0; j < h; j++ {
+			if i == 0 {
+				dif = A[i][j]
+			} else {
+				dif = A[i][j] - A[i-1][j]
+				if dif < 0 {
+					dif *= -1
+				}
+			}
+
+			sum += dif
+
+			if i == w-1 {
+				sum += A[i][j]
+			}
+
+			if j == 0 {
+				dif = A[i][j]
+			} else {
+				dif = A[i][j] - A[i][j-1]
+				if dif < 0 {
+					dif *= -1
+				}
+			}
+
+			sum += dif
+			if j == h-1 {
+				sum += A[i][j]
+			}
+
+		}
+
+	}
+
+	return sum
+}
+
+func strangeCounter(t int64) int64 {
+
+	var x, y, dif, n int64
+
+	x = 0
+	dif = 3
+	n = 1
+	y = x + dif
+
+	for {
+		if x < t && t <= y {
+			break
+		}
+		n++
+		dif *= 2
+		x, y = y, y+dif
+	}
+
+	posInRange := t - x
+	result := dif - posInRange + 1
+
+	return result
+}
+
+func quickSort(arr []int32) []int32 {
+
+	pivot := arr[0]
+
+	var result, left, equal, right []int32
+
+	for _, value := range arr {
+		if value < pivot {
+			left = append(left, value)
+		} else if value == pivot {
+			equal = append(equal, value)
+		} else {
+			right = append(right, value)
+		}
+	}
+
+	result = append(result, left...)
+	result = append(result, equal...)
+	result = append(result, right...)
+
+	return result
+}
+
+func closestNumbers(arr []int32) []int32 {
+
+	length := int32(len(arr))
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[int32(i)] < arr[int32(j)]
+	})
+
+	var result []int32
+	var min, cur int32
+
+	for i := int32(0); i < length-1; i++ {
+		cur = arr[i+1] - arr[i]
+
+		if cur < min || i == 0 {
+			min = cur
+			result = []int32{}
+		}
+
+		if cur == min {
+			result = append(result, arr[i], arr[i+1])
+		}
+	}
+
+	return result
+}
+
+func runningTime(arr []int32) int32 {
+
+	shift := func(i int32, arr []int32) int32 {
+		value := arr[i]
+		j := i - 1
+		var count int32
+		for j >= 0 && value < arr[j] {
+			arr[j+1] = arr[j]
+			count++
+			j--
+		}
+
+		arr[j+1] = value
+		return count
+	}
+
+	length := int32(len(arr))
+
+	var res int32
+
+	for i := int32(0); i < length; i++ {
+		res += shift(i, arr)
+	}
+
+	return res
+}
+
+func happyLadybugs(b string) string {
+	arrMap := make(map[string]int)
+
+	empty := false
+	var happy string
+
+	for _, value := range b {
+		if value == '_' {
+			empty = true
+		} else {
+			arrMap[string(value)]++
+		}
+	}
+
+	if empty == false {
+		length := len(b)
+		var prev byte
+		happyPrev := false
+		happy = "YES"
+
+		for i := 0; i < length; i++ {
+			if i == 0 {
+				prev = b[i]
+				continue
+			}
+
+			if b[i] != prev {
+				if !happyPrev || i == length-1 {
+					happy = "NO"
+					break
+				} else {
+					prev = b[i]
+				}
+			} else {
+				happyPrev = true
+			}
+		}
+	}
+
+	if happy != "NO" {
+		happy = "YES"
+		for _, value := range arrMap {
+			if value < 2 {
+				happy = "NO"
+				break
+			}
+		}
+	}
+
+	return happy
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2615,7 +2843,7 @@ func main() {
 	//    tempArr := strings.Split(tempString, " ")
 	//    book[tempArr[0]] = tempArr[1]
 	//}
-	//
+	//л
 	//names := make([]string, n)
 	//for i:=0; i < int(n); i++ {
 	//    tempString = readLine(reader)
@@ -2623,10 +2851,10 @@ func main() {
 	//}
 
 	var arr []int32
-	arr = append(arr, 0, 1, 2, 4, 3, 5)
+	arr = append(arr, 2, 1, 3, 1, 2)
 
-	//insertionSort(arr)
-	result := flatlandSpaceStations(6, arr)
+	//result := absolutePermutation(5, 1)
+	result := happyLadybugs("G")
 	fmt.Println(result)
 
 }
