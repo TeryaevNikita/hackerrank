@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/big"
 	"math/bits"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -2831,6 +2832,90 @@ func happyLadybugs(b string) string {
 	return happy
 }
 
+func camelcase(s string) int32 {
+
+	var count int32 = 1
+	var upper = false
+
+	for _, value := range s {
+		if value > 'A' && value < 'Z' {
+			upper = true
+		} else {
+			if upper == true {
+				count++
+			}
+			upper = false
+		}
+	}
+
+	return count
+}
+
+func countingSort(arr []int32) []int32 {
+
+	result := make([]int32, 100)
+
+	for _, value := range arr {
+		result[value]++
+	}
+
+	var j int32
+	for i, value := range result {
+
+		for l := int32(0); l < value; l++ {
+			arr[j] = int32(i)
+			j++
+		}
+	}
+	return arr
+}
+
+func findMedian(arr []int32) int32 {
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i] < arr[j]
+	})
+
+	return arr[len(arr)/2]
+
+}
+
+func countSort(arr [][]string) {
+
+	stdout, _ := os.Create(os.Getenv("OUTPUT_PATH"))
+
+	defer stdout.Close()
+
+	writer := bufio.NewWriterSize(stdout, 1024*1024*16)
+
+	length := len(arr)
+	half := length / 2
+
+	result := make([]string, 100)
+
+	var str string
+
+	for i, row := range arr {
+		ind, _ := strconv.ParseInt(row[0], 10, 64)
+
+		if i < half {
+			str = "-"
+		} else {
+			str = row[1]
+		}
+
+		result[ind] += str + " "
+	}
+
+	for _, value := range result {
+		fmt.Fprintf(writer, "%s", value)
+		//resStr += value
+	}
+
+	writer.Flush()
+	//fmt.Printf("%s", resStr)
+
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2850,12 +2935,33 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr []int32
-	arr = append(arr, 2, 1, 3, 1, 2)
+	var arr [][]string
+	arr = append(arr,
+		[]string{"0", "ab"},
+		[]string{"6", "cd"},
+		[]string{"0", "ef"},
+		[]string{"6", "gh"},
+		[]string{"4", "ij"},
+		[]string{"0", "ab"},
+		[]string{"6", "cd"},
+		[]string{"0", "ef"},
+		[]string{"6", "gh"},
+		[]string{"0", "ij"},
+		[]string{"4", "that"},
+		[]string{"3", "be"},
+		[]string{"0", "to"},
+		[]string{"1", "be"},
+		[]string{"5", "question"},
+		[]string{"1", "or"},
+		[]string{"2", "not"},
+		[]string{"4", "is"},
+		[]string{"2", "to"},
+		[]string{"4", "the"},
+	)
 
-	//result := absolutePermutation(5, 1)
-	result := happyLadybugs("G")
-	fmt.Println(result)
+	countSort(arr)
+	//result := countSort(arr)
+	//fmt.Println(result)
 
 }
 
