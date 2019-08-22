@@ -2916,6 +2916,204 @@ func countSort(arr [][]string) {
 
 }
 
+func activityNotifications(expenditure []int32, d int32) int32 {
+
+	sortMedians := make([]int32, 201)
+	length := int32(len(expenditure))
+
+	for i, value := range expenditure {
+		sortMedians[value]++
+		if int32(i) == d-1 {
+			break
+		}
+	}
+
+	getDoubleMedian := func(arr []int32, d int32, even bool) int32 {
+		var left, right, d1 int32
+		left = -1
+
+		if even {
+			d1 = d + 1
+		} else {
+			d1 = d
+		}
+
+		for i, value := range arr {
+			d -= value
+			d1 -= value
+
+			if d <= 0 && left == -1 {
+				left = int32(i)
+			}
+
+			if d1 <= 0 {
+				right = int32(i)
+				break
+			}
+		}
+
+		return left + right
+	}
+
+	updateMedian := func(arr []int32, removeV int32, addV int32) {
+		arr[removeV]--
+		arr[addV]++
+	}
+
+	var medianEven bool
+	medianLen := (d + 1) / 2
+
+	if d%2 == 0 {
+		medianEven = true
+	}
+
+	var doubleMedianVal, expendure int32
+
+	var count int32
+	for i := d; i < length; i++ {
+		doubleMedianVal = getDoubleMedian(sortMedians, medianLen, medianEven)
+
+		expendure = expenditure[i]
+
+		if doubleMedianVal <= expendure {
+			count++
+		}
+
+		updateMedian(sortMedians, expenditure[i-d], expendure)
+	}
+
+	return count
+}
+
+func lilysHomework(arr []int32) int32 {
+
+	length := int32(len(arr))
+	sorted := append([]int32(nil), arr...)
+	straight := append([]int32(nil), arr...)
+	reverse := append([]int32(nil), arr...)
+
+	for i := len(reverse)/2 - 1; i >= 0; i-- {
+		opp := len(reverse) - 1 - i
+		reverse[i], reverse[opp] = reverse[opp], reverse[i]
+	}
+
+	arrMap1 := make(map[int32]int32)
+	arrMap2 := make(map[int32]int32)
+
+	for i, value := range sorted {
+		arrMap1[value] = int32(i)
+	}
+
+	for i, value := range reverse {
+		arrMap2[value] = int32(i)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i] < sorted[j]
+	})
+
+	var count1, count2, value, reverseValue, sortedValue, position int32
+
+	for i := int32(0); i < length; i++ {
+		value = straight[i]
+		reverseValue = reverse[i]
+		sortedValue = sorted[i]
+
+		if value != sortedValue {
+			count1++
+			position = arrMap1[sortedValue]
+			straight[position] = value
+			arrMap1[value] = position
+		}
+
+		if reverseValue != sortedValue {
+			count2++
+			position = arrMap2[sortedValue]
+			reverse[position] = reverseValue
+			arrMap2[reverseValue] = position
+		}
+	}
+
+	if count2 < count1 {
+		count1 = count2
+	}
+	return count1
+}
+
+func twoPluses(grid []string) int32 {
+
+	field := make([][]bool, len(grid))
+
+	for i, row := range grid {
+		field[i] = make([]bool, len(row))
+		for j, value := range row {
+			if value == 'G' {
+				field[i][j] = true
+			} else {
+				field[i][j] = false
+			}
+		}
+	}
+
+	findMaxValidPlus := func(grid [][]bool) (y, x, h int32) {
+		rows, cols := len(grid), len(grid[0])
+		var sideLen, maxSide, maxI, maxJ int
+		var left, right, top, bot int
+		maxI = -1
+
+		for i := 0; i < rows; i++ {
+			for j := 0; j < cols; j++ {
+				value := grid[i][j]
+
+				if value == true {
+					sideLen = 1
+
+					if maxI < 0 {
+						maxI, maxJ = i, j
+					}
+
+					for {
+						left, right, top, bot = j-sideLen, j+sideLen, i-sideLen, i+sideLen
+
+						if left >= 0 && right < cols && top >= 0 && bot < rows &&
+							grid[i][left] == true && grid[i][right] == true && grid[top][j] == true && grid[bot][j] == true {
+							sideLen++
+						} else {
+							break
+						}
+					}
+
+					if sideLen > maxSide {
+						maxSide = sideLen
+						maxI, maxJ = i, j
+					}
+				}
+			}
+		}
+
+		return int32(maxI), int32(maxJ), int32(maxSide)
+	}
+
+	var v1, v2 int32
+	x, y, h := findMaxValidPlus(field)
+	if h > 0 {
+		v1 = h*4 - 3
+		for l := int32(0); l < h; l++ {
+			field[x-l][y] = false
+			field[x+l][y] = false
+			field[x][y-l] = false
+			field[x][y+l] = false
+		}
+
+		_, _, h2 := findMaxValidPlus(field)
+		if h2 > 0 {
+			v2 = h2*4 - 3
+		}
+	}
+
+	return v1 * v2
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -2935,33 +3133,29 @@ func main() {
 	//    names = append(names, tempString)
 	//}
 
-	var arr [][]string
+	var arr []string
 	arr = append(arr,
-		[]string{"0", "ab"},
-		[]string{"6", "cd"},
-		[]string{"0", "ef"},
-		[]string{"6", "gh"},
-		[]string{"4", "ij"},
-		[]string{"0", "ab"},
-		[]string{"6", "cd"},
-		[]string{"0", "ef"},
-		[]string{"6", "gh"},
-		[]string{"0", "ij"},
-		[]string{"4", "that"},
-		[]string{"3", "be"},
-		[]string{"0", "to"},
-		[]string{"1", "be"},
-		[]string{"5", "question"},
-		[]string{"1", "or"},
-		[]string{"2", "not"},
-		[]string{"4", "is"},
-		[]string{"2", "to"},
-		[]string{"4", "the"},
+		//"GGGGGG",
+		//"GBBBGB",
+		//"GGGGGG",
+		//"GGBBGB",
+		//"GGGGGG",
+
+		//	"BGBBGB",
+		//"GGGGGG",
+		//"BGBBGB",
+		//"GGGGGG",
+		//"BGBBGB",
+		//"BGBBGB",
+		"BGGB",
+		"BBBB",
+		"BBBB",
+		"BBBB",
 	)
 
-	countSort(arr)
-	//result := countSort(arr)
-	//fmt.Println(result)
+	//countSort(arr)
+	result := twoPluses(arr)
+	fmt.Println(result)
 
 }
 
