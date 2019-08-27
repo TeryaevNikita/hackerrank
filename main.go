@@ -8,6 +8,7 @@ import (
 	"math/big"
 	"math/bits"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -3055,22 +3056,21 @@ func twoPluses(grid []string) int32 {
 		}
 	}
 
-	findMaxValidPlus := func(grid [][]bool) (y, x, h int32) {
-		rows, cols := len(grid), len(grid[0])
-		var sideLen, maxSide, maxI, maxJ int
-		var left, right, top, bot int
-		maxI = -1
+	findValidPlus := func(grid [][]bool, startI, startJ int32) (y, x, h int32) {
+		rows, cols := int32(len(grid)), int32(len(grid[0]))
 
-		for i := 0; i < rows; i++ {
-			for j := 0; j < cols; j++ {
+		var sideLen, centerI, centerJ int32
+		var left, right, top, bot int32
+		var find = false
+		for i := startI; i < rows; i++ {
+			for j := startJ; j < cols; j++ {
 				value := grid[i][j]
 
 				if value == true {
+					find = true
 					sideLen = 1
-
-					if maxI < 0 {
-						maxI, maxJ = i, j
-					}
+					centerI = i
+					centerJ = j
 
 					for {
 						left, right, top, bot = j-sideLen, j+sideLen, i-sideLen, i+sideLen
@@ -3082,36 +3082,134 @@ func twoPluses(grid []string) int32 {
 							break
 						}
 					}
-
-					if sideLen > maxSide {
-						maxSide = sideLen
-						maxI, maxJ = i, j
-					}
+					break
 				}
+			}
+			if find {
+				break
 			}
 		}
 
-		return int32(maxI), int32(maxJ), int32(maxSide)
+		return centerI, centerJ, int32(sideLen)
 	}
 
-	var v1, v2 int32
-	x, y, h := findMaxValidPlus(field)
-	if h > 0 {
-		v1 = h*4 - 3
-		for l := int32(0); l < h; l++ {
-			field[x-l][y] = false
-			field[x+l][y] = false
-			field[x][y-l] = false
-			field[x][y+l] = false
-		}
+	var v1, v2, maxV int32
+	rows, cols := int32(len(grid)), int32(len(grid[0]))
 
-		_, _, h2 := findMaxValidPlus(field)
-		if h2 > 0 {
-			v2 = h2*4 - 3
+	for i := int32(0); i < rows; i++ {
+		for j := int32(0); j < cols; j++ {
+			x, y, h := findValidPlus(field, i, j)
+			if h > 0 {
+				for l := int32(0); l < h; l++ {
+					field[x-l][y] = false
+					field[x+l][y] = false
+					field[x][y-l] = false
+					field[x][y+l] = false
+
+					v1 = (l+1)*4 - 3
+
+					for i2 := i; i2 < rows; i2++ {
+						for j2 := int32(0); j2 < cols; j2++ {
+							_, _, h2 := findValidPlus(field, i2, j2)
+
+							if h2 > 0 {
+								v2 = h2*4 - 3
+								if v1*v2 > maxV {
+									maxV = v1 * v2
+								}
+							}
+						}
+					}
+
+				}
+
+				for l := int32(0); l < h; l++ {
+					field[x-l][y] = true
+					field[x+l][y] = true
+					field[x][y-l] = true
+					field[x][y+l] = true
+				}
+			}
 		}
 	}
 
-	return v1 * v2
+	return maxV
+}
+
+func minimumNumber(n int32, password string) int32 {
+	// Return the minimum number of characters to make the password strong
+
+	criteriaStrings := []string{
+		"[\\d]",
+		"[a-z]",
+		"[A-Z]",
+		"[!@#$%^&*()-+]",
+	}
+
+	var i int32
+
+	for _, value := range criteriaStrings {
+		criteria := regexp.MustCompile(value)
+		if criteria.MatchString(password) {
+			i++
+		}
+	}
+
+	result := int32(len(criteriaStrings)) - i
+
+	if result < 6-n {
+		result = 6 - n
+	}
+
+	return result
+}
+
+func anagram(s string) int32 {
+
+	length := len(s)
+
+	if length%2 == 1 {
+		return -1
+	}
+
+	strmap := make(map[string]int32)
+
+	for i := 0; i < length/2; i++ {
+		strmap[string(s[i])]++
+	}
+
+	var counts int32
+	for i := length / 2; i < length; i++ {
+		char := string(s[i])
+		if value, ok := strmap[char]; ok && value > 0 {
+			strmap[char]--
+		} else {
+			counts++
+		}
+	}
+
+	return counts
+}
+
+func caesarCipher(s string, k int32) string {
+
+	var res string
+
+	var a, z, A, Z = 'a', 'z', 'A', 'Z'
+	length, capLength := z-a+1, Z-A+1
+	var symbol byte
+	for _, value := range s {
+		if value >= a && value <= z {
+			symbol = byte(a + (value-a+k)%length)
+		} else if value >= A && value <= Z {
+			symbol = byte(A + (value-A+k)%capLength)
+		} else {
+			symbol = byte(value)
+		}
+		res += string(symbol)
+	}
+
+	return res
 }
 
 func main() {
@@ -3135,26 +3233,12 @@ func main() {
 
 	var arr []string
 	arr = append(arr,
-		//"GGGGGG",
-		//"GBBBGB",
-		//"GGGGGG",
-		//"GGBBGB",
-		//"GGGGGG",
-
-		//	"BGBBGB",
-		//"GGGGGG",
-		//"BGBBGB",
-		//"GGGGGG",
-		//"BGBBGB",
-		//"BGBBGB",
-		"BGGB",
-		"BBBB",
-		"BBBB",
-		"BBBB",
+		"GGGGGG",
 	)
-
-	//countSort(arr)
-	result := twoPluses(arr)
+	//
+	////countSort(arr)
+	//result := caesarCipher("middle-Outz", 2)
+	result := caesarCipher("abcdefghijklmnopqrstuvwxyz", 2)
 	fmt.Println(result)
 
 }
@@ -3164,6 +3248,5 @@ func readLine(reader *bufio.Reader) string {
 	if err == io.EOF {
 		return ""
 	}
-
 	return strings.Trim(string(str), "\r\n")
 }
