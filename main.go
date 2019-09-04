@@ -3212,6 +3212,30 @@ func caesarCipher(s string, k int32) string {
 	return res
 }
 
+func makingAnagrams(s1 string, s2 string) int32 {
+
+	strMap := make(map[int32]int)
+
+	for _, symbol := range s1 {
+		strMap[symbol]++
+	}
+
+	for _, symbol := range s2 {
+		strMap[symbol]--
+	}
+
+	var result int
+	for _, value := range strMap {
+		if value < 0 {
+			value = -value
+		}
+
+		result += value
+	}
+
+	return int32(result)
+}
+
 func main() {
 	//reader := bufio.NewReader(os.Stdin)
 	//
@@ -3238,7 +3262,7 @@ func main() {
 	//
 	////countSort(arr)
 	//result := caesarCipher("middle-Outz", 2)
-	result := caesarCipher("abcdefghijklmnopqrstuvwxyz", 2)
+	result := makingAnagrams("abc", "amnop")
 	fmt.Println(result)
 
 }
